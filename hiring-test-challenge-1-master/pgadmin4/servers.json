@@ -1,0 +1,13 @@
+{
+    "Servers": {
+        "warehouse-db": {
+            "Name": "warehouse-db",
+            "Group": "Servers",
+            "Port": 5432,
+            "Username": "postgres",
+            "Host": "postgres-warehouse",
+            "SSLMode": "prefer",
+            "MaintenanceDB": "postgres"
+        }
+    }
+}

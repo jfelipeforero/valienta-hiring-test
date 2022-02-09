@@ -1,0 +1,64 @@
+swagger: "2.0"
+info:
+  title: "Warehouse Service API"
+  description: >
+    Warehouse service API docs
+  version: "1.0.0"
+basePath: "/api/v1"
+securityDefinitions:
+  HMAC:
+    type: apiKey
+    in: header
+    name: Authorization
+    description: HMAC for the request
+paths:
+  /health/ping:
+    get:
+      summary: "Ping to test if service is up"
+      description: "Will return 204 no content as notification."
+      responses:
+        200:
+          description: "Service is up"
+          schema:
+            $ref: "#/definitions/PingResponse"
+        500:
+          $ref: "#/responses/ApiError"
+      tags:
+        - Health
+responses:
+  UnauthorizedError:
+    description: Unauthorized Error
+    schema:
+      $ref: "#/definitions/UnauthorizedError"
+  ApiError:
+    description: Internal Server Error
+    schema:
+      $ref: "#/definitions/ApiError"
+definitions:
+  PingResponse:
+    title: Ping
+    description: Response to check if service is up.
+    type: object
+  Response:
+    title: Response
+    description: Response to endpoint
+  ApiError:
+    title: ApiError
+    description: Error representing a handled error by the API
+    type: object
+    properties:
+      errorCode:
+        type: string
+      message:
+        type: string
+    additionalProperties: false
+    minProperties: 2
+  UnauthorizedError:
+    title: Unauthorized Error
+    description: Error representing unauthorized access
+    type: object
+    properties:
+      message:
+        type: string
+    additionalProperties: false
+    minProperties: 1

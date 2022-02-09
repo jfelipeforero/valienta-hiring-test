@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  postgres:
+    image: postgres:11.5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - 5432:5432
+
+  pgadmin:
+    image: dpage/pgadmin4:4.17
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres
+    ports:
+      - 8081:80
+    volumes:
+      - ./pgadmin4/servers.json:/pgadmin4/servers.json
+
+  challenge-service-db-migration:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      - DATABASE_DNS=postgres
+    depends_on:
+      - postgres

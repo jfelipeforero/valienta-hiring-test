@@ -1,0 +1,33 @@
+version: '3.7'
+services:
+  postgres-challenge:
+    image: postgres:11.5
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+  pgadmin:
+    image: dpage/pgadmin4:4.17
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - postgres-order
+    ports:
+      - 8080:80
+    volumes:
+      - ./pgadmin4/servers.json:/pgadmin4/servers.json
+    logging:
+      driver: none
+  challenge-service-db-migration:
+    image: docker.pkg.github/valienta/challenge-service-db-migration:latest
+    environment:
+      DATABASE_DNS: postgres-challenge
+      DATABASE_PORT: 5432
+      DATABASE_NAME: postgres
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      DATABASE_USE_SSL: 'false'
+    depends_on:
+      - postgres-challenge
