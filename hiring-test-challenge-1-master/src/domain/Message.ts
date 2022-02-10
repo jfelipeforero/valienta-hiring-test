@@ -10,9 +10,9 @@ import {
 } from 'typeorm';
 
 // eslint-disable-next-line import/no-cycle
-import WarehouseEvent from './Table';
+import WarehouseEvent from './Type';
 
-@Entity({ name: 'messages' })
+@Entity({ name: 'message' })
 export default class Message {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -21,13 +21,10 @@ export default class Message {
   message: string;
 
   @Column()
-  alien: string;
-
-  @Column()
-  messageType: string;
-
-  @Column()
   type: string;
+
+  @Column()
+  alienLeader: string;
 
   @OneToMany(() => WarehouseEvent, (event) => event.warehouse, {})
   warehouseEvents: WarehouseEvent[];
@@ -37,9 +34,7 @@ export default class Message {
 
   constructor(id?: string, message?: string, alien?: string, messageType?: string, type?: string) {
     this.id = id;
-    this.message = message;
     this.alien = alien;
-    this.messageType = messageType;
     this.type = type;
   }
 }

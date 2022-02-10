@@ -1,2 +1,18 @@
 // eslint-disable-next-line import/prefer-default-export
-export { default as messageController } from './messageController';
+import {
+  validateMessage,
+  getAlienMessages,
+  getMessagesBetweenDates,
+  getMessagesByType,
+  getMessagesByValidity,
+  updateMessage,
+} from './messageController';
+
+export default {
+  validateMessage,
+  getAlienMessages,
+  getMessagesBetweenDates,
+  getMessagesByType,
+  getMessagesByValidity,
+  updateMessage,
+};
