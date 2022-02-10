@@ -2,9 +2,11 @@ import { BaseContext } from 'koa';
 import StatusCodes from 'http-status-codes';
 import { Between, getRepository, OneToMany } from 'typeorm';
 import CustomError from '../errors';
+const Type = require('src/domain/Type')
 const Message = require('src/domain/Message');
 
 const messageRepo = getRepository(Message)
+const typeRepo = getRepository(Type)
 
 async function ping(ctx: BaseContext): Promise<void> {
   ctx.status = StatusCodes.OK;
@@ -140,14 +142,36 @@ const getMessagesByValidity = async (ctx:BaseContext): Promise<void> => {
   if (!validity) {
     throw new CustomError.BadRequestError('Message type not provided');
   }
-  if()
+  if(validity===true){
+    const messages = await messageRepo.find({
+      where:{
+        valid:true
+      }
+    })
+    ctx.status = StatusCodes.OK
+    ctx.body = {messages}
+  }
+  else {
+    const messages = await messageRepo.find({
+      where: {
+        valid: false
+      }
+    })
+    ctx.status = StatusCodes.OK
+    ctx.body = {messages}
+  }
 };
 
-const updateMessage = async(ctx):Promise<void>=>{
+const updateMessage = async(ctx:BaseContext):Promise<void>=>{
   const {oldMessage,newMessage} = ctx.body
   if(!oldMessage || !newMessage){
     throw new CustomError.BadRequestError('Please provide old message and new message')
   }
+  const _ = await messageRepo.find({
+    where:{
+      _id:oldMessage
+    }
+  })
   const oldMessageDate = await messageRepo.find(oldMessage.createdAt)
   const diffTime = (Math.abs(Stringnew Date()-oldMessageDate))/60000
   if(diffTime>5){

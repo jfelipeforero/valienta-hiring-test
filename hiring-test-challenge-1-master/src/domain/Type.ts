@@ -18,19 +18,19 @@ export default class Type {
   @Column()
   value: string;
 
-  constructor(
-    warehouse: Warehouse,
-    data: any,
-    warehouseEventType: WarehouseEventType,
-    hasBeenProcessed?: boolean,
-    createdAt?: Date,
-    id?: string
-  ) {
-    this.id = id;
-    this.warehouse = warehouse;
-    this.data = data;
-    this.warehouseEventType = warehouseEventType;
-    this.createdAt = createdAt;
-    this.hasBeenProcessed = hasBeenProcessed;
-  }
+  // constructor(
+  //   warehouse: Warehouse,
+  //   data: any,
+  //   warehouseEventType: WarehouseEventType,
+  //   hasBeenProcessed?: boolean,
+  //   createdAt?: Date,
+  //   id?: string
+  // ) {
+  //   this.id = id;
+  //   this.warehouse = warehouse;
+  //   this.data = data;
+  //   this.warehouseEventType = warehouseEventType;
+  //   this.createdAt = createdAt;
+  //   this.hasBeenProcessed = hasBeenProcessed;
+  // }
 }
