@@ -21,7 +21,7 @@ services:
     logging:
       driver: none
   challenge-service-db-migration:
-    image: docker.pkg.github/valienta/challenge-service-db-migration:latest
+    image: docker.pkg.github.com/valienta/challenge-service-db-migration:latest
     environment:
       DATABASE_DNS: postgres-challenge
       DATABASE_PORT: 5432

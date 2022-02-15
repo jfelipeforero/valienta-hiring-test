@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/prefer-default-export
 import {
   validateMessage,
+  storeMessage,
   getAlienMessages,
   getMessagesBetweenDates,
   getMessagesByType,
@@ -10,6 +11,7 @@ import {
 
 export default {
   validateMessage,
+  storeMessage,
   getAlienMessages,
   getMessagesBetweenDates,
   getMessagesByType,
