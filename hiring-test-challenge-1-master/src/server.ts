@@ -10,8 +10,12 @@ import errorHandler from './middleware/errorHandler';
 import config from './config';
 import logger from './logger';
 import connect from './connection';
+import { getConnectionManager, getConnection, ConnectionManager } from 'typeorm';
+import Message from './domain/message.entity';
 
 const app = new Koa();
+// Enable bodyParser with default options
+app.use(bodyParser());
 const swaggerDocument: any = swagger.loadDocumentSync(`${__dirname}/swagger/v1/v1.yaml`);
 
 // Provides important security headers to make your app more secure
@@ -23,18 +27,21 @@ app.use(cors({ exposeHeaders: ['Pagination-Total'] }));
 // Logger middleware -> use winston as logger (logging.ts with config)
 app.use(loggingMiddleware);
 
-// Enable bodyParser with default options
-app.use(bodyParser());
-
 app.use(errorHandler);
 
 app.use(ui(swaggerDocument, '/docs'));
 
 app.use(routes.routes());
 
-connect().then(() => {
-  app.listen(config.port);
-  logger.info(`Server running on port ${config.port}`);
-}).catch((error: any) => logger.error('TypeORM connection error: ', error));
+const start = async () => {
+  try {
+    await connect();
+    app.listen(config.port);
+    logger.info(`Server running on port ${config.port}`);
+  } catch (error) {
+    logger.error('TypeORM connection error: ', error);
+  }
+};
 
+start();
 export default app;

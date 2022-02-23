@@ -12,7 +12,7 @@ interface PostgresDBConfig {
   database: string;
 }
 
-interface AWSConfig{
+interface AWSConfig {
   // Access key and secret are automatically loaded from enviroment variables by AWS SDK.
   // Enviroment variables names must be:
   // AWS_ACCESS_KEY_ID
@@ -43,12 +43,12 @@ const config: IConfig = {
     port: +process.env.DB_PORT,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_DATABASE
+    database: process.env.DB_DATABASE,
   },
   awsConfig: {
     region: process.env.AWS_REGION || 'us-east-2',
     warehouseServiceTopicARN: process.env.AWS_WAREHOUSE_SERVICE_TOPIC_ARN,
-    warehouseServiceQueueUrl: process.env.AWS_WAREHOUSE_SERVICE_QUEUE_URL
+    warehouseServiceQueueUrl: process.env.AWS_WAREHOUSE_SERVICE_QUEUE_URL,
   },
 };
 

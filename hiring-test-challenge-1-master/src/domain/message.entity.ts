@@ -1,14 +1,4 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  OneToMany,
-  VersionColumn,
-  Generated,
-  OneToOne,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 import Alien from './alien.entity';
 import Type from './type.entity';
 
@@ -20,29 +10,19 @@ export default class Message {
   id: string;
 
   @Column()
+  created_at: Date;
+
+  @Column()
   content: string;
 
   @Column()
-  valid: boolean;
+  valid: string;
 
-  @OneToOne(() => Type)
-  type: Type;
+  @ManyToOne(() => Type, (type) => type.id, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'typeid' })
+  type: string;
 
-  @ManyToOne((type) => Alien, (alien) => alien.messages, { onDelete: 'SET NULL' })
-  alienLeader: Alien;
+  @ManyToOne(() => Alien, (alienLeader) => alienLeader.id, { onDelete: 'SET NULL' })
+  @JoinColumn({ name: 'alienleaderid' })
+  alienleader: string;
 }
-//   constructor(
-//     id?: string,
-//     message?: string,
-//     alien?: string,
-//     messageType?: string,
-//     type?: string,
-//     valid?: boolean
-//   ) {
-//     this.id = id;
-//     this.content = content;
-//     this.alienLeader = alien;
-//     this.type = type;
-//     this.valid = valid;
-//   }
-// }
