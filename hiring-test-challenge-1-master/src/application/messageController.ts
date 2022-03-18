@@ -6,6 +6,7 @@ import Message from '../domain/message.entity';
 import Alien from '../domain/alien.entity';
 import Type from '../domain/type.entity';
 import sendSlackNotification from '../gateway/slackIntegration';
+import { BadRequestError } from '../errors';
 
 const typesID = {
   INFO: 'ed2a7e06-8798-4bae-b655-c62fe6e91ace',
@@ -122,14 +123,12 @@ const validateMessage = (pmessage: string) => {
   };
 };
 
-const storeMessage = async (ctx): Promise<boolean> => {
+const storeMessage = async (ctx): Promise<any> => {
   const incomingMessage = ctx.request.body.message;
 
   const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
   if (!incomingMessage) {
-    ctx.status = StatusCodes.BAD_REQUEST;
-    ctx.body = { err: 'No message provided' };
-    return false;
+    throw new BadRequestError('No message provided');
   }
   const { message, valid, reason, type, typeID, alienLeader, alienLeaderID } =
     validateMessage(incomingMessage);
@@ -165,7 +164,7 @@ const storeMessage = async (ctx): Promise<boolean> => {
                 counter++;
                 if (counter === 5) {
                   sendSlackNotification({
-                    text: `${ctx.body.messages[j].alienleader.value} alien leader has sent 5 DANGER messages in the last hour`,
+                    text: `Alien leader ${ctx.body.messages[j].alienleader.value} has sent 5 DANGER messages in the last hour`,
                   });
                 }
               } else if (
@@ -186,14 +185,12 @@ const storeMessage = async (ctx): Promise<boolean> => {
   ctx.body = { createdAt: messageData.created_at, message, valid, reason, type, alienLeader };
 };
 
-const getMessagesBetweenDates = async (ctx): Promise<boolean> => {
+const getMessagesBetweenDates = async (ctx): Promise<any> => {
   const { firstDate, lastDate } = ctx.request.query;
   const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
 
   if (!firstDate || !lastDate) {
-    ctx.status = StatusCodes.BAD_REQUEST;
-    ctx.body = { err: 'Please provide the dates in which you want to do a search' };
-    return false;
+    throw new BadRequestError('Please provide the dates in which you want to do a search');
   }
 
   const messages = await messageRepo.find({
@@ -206,37 +203,36 @@ const getMessagesBetweenDates = async (ctx): Promise<boolean> => {
   ctx.body = { nbHits: messages.length, messages };
 };
 
-const getAlienMessages = async (ctx): Promise<boolean> => {
-  const alien = ctx.request.body.alien;
+const getAlienMessages = async (ctx): Promise<any> => {
+  const { alienleader } = ctx.request.query;
   const alienRepo = getConnectionManager().get('my-connection').getRepository(Alien);
-  if (!alien) {
-    ctx.status = StatusCodes.BAD_REQUEST;
-    ctx.body = { err: 'Alien name not provided' };
-    return false;
+
+  if (!alienleader) {
+    throw new BadRequestError('Alien name not provided');
   }
   const messages = await alienRepo.find({
     where: {
-      value: alien,
+      value: alienleader,
     },
-    relations: ['messages'],
+    relations: ['messages', 'messages.type'],
   });
   ctx.status = StatusCodes.OK;
   ctx.body = { nbHits: messages[0].messages.length, messages };
 };
 
 const getMessagesByType = async (ctx): Promise<any> => {
-  const messageType = ctx.request.body.type;
+  const { messageType } = ctx.request.query;
   const typeRepo = getConnectionManager().get('my-connection').getRepository(Type);
+
   if (!messageType) {
-    ctx.status = StatusCodes.BAD_REQUEST;
-    ctx.body = { err: 'Message type not provided' };
-    return false;
+    throw new BadRequestError('Message type not provided');
   }
+
   const messages = await typeRepo.find({
     where: {
       value: messageType,
     },
-    relations: ['messages'],
+    relations: ['messages', 'messages.alienleader'],
   });
   ctx.status = StatusCodes.OK;
   ctx.body = { nbHits: messages[0].messages.length, messages };
@@ -247,9 +243,7 @@ const getMessagesByValidity = async (ctx): Promise<any> => {
   const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
 
   if (!valid) {
-    ctx.status = StatusCodes.BAD_REQUEST;
-    ctx.body = { err: 'Message validity not provided' };
-    return false;
+    throw new BadRequestError('Message validity not provided');
   }
   if (valid === 'true') {
     const messages = await messageRepo.find({
@@ -272,9 +266,7 @@ const getMessagesByValidity = async (ctx): Promise<any> => {
     ctx.status = StatusCodes.OK;
     ctx.body = { nbHits: messages.length, messages };
   } else {
-    ctx.status = StatusCodes.BAD_REQUEST;
-    ctx.body = { err: 'Validity provided differ from established: ["true","false"]' };
-    return false;
+    throw new BadRequestError('Validity provided differ from established: ["true","false"]');
   }
 };
 
@@ -283,21 +275,16 @@ const updateMessage = async (ctx): Promise<any> => {
   const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
 
   if (!originalMessage || !newMessage) {
-    ctx.status = StatusCodes.BAD_REQUEST;
-    ctx.body = { err: 'Please provide original message and new message' };
-    return false;
+    throw new BadRequestError('Please provide original message and new message');
   }
   const messageData = await messageRepo.find({
     where: {
       content: originalMessage,
     },
   });
-  console.log(messageData, typeof messageData);
 
-  if (!messageData) {
-    ctx.status = StatusCodes.BAD_REQUEST;
-    ctx.body = { err: `Not existing message with content ${originalMessage}` };
-    return false;
+  if (messageData[0] === undefined) {
+    throw new BadRequestError(`Not existing message with content: ${originalMessage}`);
   }
 
   const { message, valid, reason, type, typeID, alienLeader, alienLeaderID } =
@@ -307,13 +294,11 @@ const updateMessage = async (ctx): Promise<any> => {
   const currentDate = new Date().getTime() / 60000;
   const diffTime = currentDate - originalMessageDate;
   if (diffTime > 5) {
-    ctx.status = StatusCodes.BAD_REQUEST;
-    ctx.body = {
-      error: `Message to replace must have been created in the last 5 minutos, time elapsed: ${Math.round(
+    throw new BadRequestError(
+      `Message to replace must have been created in the last 5 minutos, time elapsed: ${Math.round(
         diffTime
-      )} minutes`,
-    };
-    return false;
+      )} minutes`
+    );
   }
 
   const messageUpdated = await messageRepo
@@ -332,16 +317,21 @@ const updateMessage = async (ctx): Promise<any> => {
     .execute();
 
   ctx.status = StatusCodes.OK;
-  ctx.body = { messageUpdated };
+  ctx.body = {
+    messageUpdated,
+    newMessage: message,
+    valid,
+    reason,
+    type,
+    alienLeader,
+  };
 };
 
-const deleteMessage = async (ctx): Promise<boolean> => {
+const deleteMessage = async (ctx): Promise<any> => {
   const { message } = ctx.request.body;
   const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
   if (!message) {
-    ctx.status = StatusCodes.BAD_REQUEST;
-    ctx.body = { err: 'Please provide message to delete' };
-    return false;
+    throw new BadRequestError('Please provide message to delete');
   }
   const messageDeleted = await messageRepo
     .createQueryBuilder()

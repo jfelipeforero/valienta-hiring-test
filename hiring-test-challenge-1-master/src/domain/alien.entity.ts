@@ -10,6 +10,4 @@ export default class Alien {
   value: string;
   @OneToMany(() => Message, (message) => message.alienleader)
   messages: string;
-  // @Column()
-  // value: string;
 }

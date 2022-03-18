@@ -10,6 +10,4 @@ export default class Type {
   value: string;
   @OneToMany(() => Message, (message) => message.type)
   messages: string;
-  // @Column()
-  // value: string;
 }

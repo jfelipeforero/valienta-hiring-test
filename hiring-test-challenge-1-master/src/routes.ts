@@ -8,7 +8,7 @@ import {
   getMessagesByValidity,
   updateMessage,
   deleteMessage,
-} from './application/messageController';
+} from './application/index';
 
 const routes = new Router();
 
@@ -21,10 +21,10 @@ routes.patch(`/${config.apiPrefix}/message`, updateMessage);
 
 routes.delete(`/${config.apiPrefix}/message`, deleteMessage);
 
-//Alien router
-routes.post(`/${config.apiPrefix}/alien`, getAlienMessages);
+//Messages by alien
+routes.get(`/${config.apiPrefix}/message/alien`, getAlienMessages);
 
-//Type router
-routes.post(`/${config.apiPrefix}/type`, getMessagesByType);
+//Messages by type
+routes.get(`/${config.apiPrefix}/message/type`, getMessagesByType);
 
 export default routes;
