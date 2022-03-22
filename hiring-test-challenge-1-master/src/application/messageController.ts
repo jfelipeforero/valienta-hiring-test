@@ -8,37 +8,7 @@ import Type from '../domain/type.entity';
 import sendSlackNotification from '../gateway/slackIntegration';
 import { BadRequestError } from '../errors';
 
-const typesID = {
-  INFO: 'ed2a7e06-8798-4bae-b655-c62fe6e91ace',
-  WARNING: '768731af-563f-4ba4-bf98-946d29a9170a',
-  DANGER: 'b76a4e3d-f04d-4714-8d54-1c7dd1b50db4',
-};
-
-const aliensID = {
-  B: '4a2d4fdc-9e48-46f4-80ea-7532462b98ae',
-  C: '5ad1c305-5f27-4686-934f-8eb0000ff91e',
-  D: '5d4fc74e-cfca-4470-99ad-5daad65501bf',
-  F: '61a4780e-777f-4a5e-aab6-852f6fb13af4',
-  G: 'fb9fd09f-a2b9-46ba-aaac-48f3c53e97f3',
-  H: '713b395b-9bd8-4543-a17e-6c7e6e9575d6',
-  J: '65f2f7d6-9a23-4836-89e9-db13c8212d4d',
-  K: '21a5b7c8-709b-41a7-b890-e0a85247e8bb',
-  L: '97d2cf7e-645f-45e6-8ffa-07af0480ce9f',
-  M: 'cb8d30f4-a88f-4349-ac2a-bfac86398e40',
-  N: '402c8b05-b1d9-41de-917c-638a80084315',
-  P: '1480a0eb-1cfa-4bb2-9f4d-20ebe35d5058',
-  Q: '3843d930-9eff-46d4-a5cd-26bdaa095f45',
-  R: 'eacb6d51-7ac2-419b-8c6c-8aa0dae0980b',
-  S: '196f0b29-093e-416a-8bb4-015280d123a0',
-  T: '92ab447d-8738-4224-9db9-d342a0a38ba8',
-  V: 'c67ad7e5-f8ee-46e0-9581-aa01ef57621e',
-  W: 'd7d697e0-49d5-4ef5-a674-91983a0ee7a7',
-  X: '178684a2-75da-4e61-a0bc-b26116a6e74d',
-  Y: '5f9ae0ee-93c0-479d-a8c8-615d04e66058',
-  Z: 'e95cd4ee-4f61-48ec-b874-df01604d1748',
-};
-
-const validateMessage = (pmessage: string) => {
+const validateMessage = async (pmessage: string) => {
   const message: string[] = pmessage.split(' ').slice(0, -1);
   let decryptedMessage = [];
   const consonants = 'bcdfghjklmnpqrstvwxyz';
@@ -113,26 +83,38 @@ const validateMessage = (pmessage: string) => {
       };
     }
   }
+  const typeRepo = getConnectionManager().get('my-connection').getRepository(Type);
+  const typeID = await typeRepo.find({
+    where: {
+      value: firstPattern,
+    },
+  });
+  const alienRepo = getConnectionManager().get('my-connection').getRepository(Alien);
+  const alienLeaderID = await alienRepo.find({
+    where: {
+      value: pmessage[0][0],
+    },
+  });
   return {
     message: pmessage,
     valid: 'true',
     type: firstPattern,
-    typeID: typesID[firstPattern],
+    typeID: typeID[0].id,
     alienLeader: pmessage[0][0],
-    alienLeaderID: aliensID[pmessage[0][0]],
+    alienLeaderID: alienLeaderID[0].id,
   };
 };
 
 const storeMessage = async (ctx): Promise<any> => {
   const incomingMessage = ctx.request.body.message;
-
-  const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
   if (!incomingMessage) {
     throw new BadRequestError('No message provided');
   }
-  const { message, valid, reason, type, typeID, alienLeader, alienLeaderID } =
-    validateMessage(incomingMessage);
 
+  const { message, valid, reason, type, typeID, alienLeader, alienLeaderID } =
+    await validateMessage(incomingMessage);
+
+  const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
   const messageData = await messageRepo.create({
     created_at: Date(),
     content: message,
@@ -248,6 +230,7 @@ const getMessagesByValidity = async (ctx): Promise<any> => {
       where: {
         valid: 'true',
       },
+      relations: ['type', 'alienleader'],
     });
     ctx.status = StatusCodes.OK;
     ctx.body = { nbHits: messages.length, messages };
@@ -258,7 +241,7 @@ const getMessagesByValidity = async (ctx): Promise<any> => {
       },
     });
     for (let i = 0; i < messages.length; i++) {
-      const { reason } = validateMessage(messages[i].content);
+      const { reason } = await validateMessage(messages[i].content);
       messages[i]['reason'] = reason;
     }
     ctx.status = StatusCodes.OK;
@@ -286,7 +269,7 @@ const updateMessage = async (ctx): Promise<any> => {
   }
 
   const { message, valid, reason, type, typeID, alienLeader, alienLeaderID } =
-    validateMessage(newMessage);
+    await validateMessage(newMessage);
 
   const originalMessageDate = new Date(messageData[0].created_at).getTime() / 1000.0 / 60;
   const currentDate = new Date().getTime() / 60000;
