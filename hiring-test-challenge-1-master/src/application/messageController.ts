@@ -187,12 +187,11 @@ const storeMessage = async (ctx): Promise<any> => {
 
 const getMessagesBetweenDates = async (ctx): Promise<any> => {
   const { firstDate, lastDate } = ctx.request.query;
-  const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
-
   if (!firstDate || !lastDate) {
     throw new BadRequestError('Please provide the dates in which you want to do a search');
   }
 
+  const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
   const messages = await messageRepo.find({
     where: {
       created_at: Between(new Date(firstDate * 1000), new Date(lastDate * 1000)),
@@ -205,11 +204,11 @@ const getMessagesBetweenDates = async (ctx): Promise<any> => {
 
 const getAlienMessages = async (ctx): Promise<any> => {
   const { alienleader } = ctx.request.query;
-  const alienRepo = getConnectionManager().get('my-connection').getRepository(Alien);
-
   if (!alienleader) {
     throw new BadRequestError('Alien name not provided');
   }
+
+  const alienRepo = getConnectionManager().get('my-connection').getRepository(Alien);
   const messages = await alienRepo.find({
     where: {
       value: alienleader,
@@ -222,12 +221,11 @@ const getAlienMessages = async (ctx): Promise<any> => {
 
 const getMessagesByType = async (ctx): Promise<any> => {
   const { messageType } = ctx.request.query;
-  const typeRepo = getConnectionManager().get('my-connection').getRepository(Type);
-
   if (!messageType) {
     throw new BadRequestError('Message type not provided');
   }
 
+  const typeRepo = getConnectionManager().get('my-connection').getRepository(Type);
   const messages = await typeRepo.find({
     where: {
       value: messageType,
@@ -240,11 +238,11 @@ const getMessagesByType = async (ctx): Promise<any> => {
 
 const getMessagesByValidity = async (ctx): Promise<any> => {
   const { valid } = ctx.request.query;
-  const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
-
   if (!valid) {
     throw new BadRequestError('Message validity not provided');
   }
+
+  const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
   if (valid === 'true') {
     const messages = await messageRepo.find({
       where: {
@@ -272,11 +270,11 @@ const getMessagesByValidity = async (ctx): Promise<any> => {
 
 const updateMessage = async (ctx): Promise<any> => {
   const { originalMessage, newMessage } = ctx.request.body;
-  const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
-
   if (!originalMessage || !newMessage) {
     throw new BadRequestError('Please provide original message and new message');
   }
+
+  const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
   const messageData = await messageRepo.find({
     where: {
       content: originalMessage,
@@ -329,10 +327,11 @@ const updateMessage = async (ctx): Promise<any> => {
 
 const deleteMessage = async (ctx): Promise<any> => {
   const { message } = ctx.request.body;
-  const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
   if (!message) {
     throw new BadRequestError('Please provide message to delete');
   }
+
+  const messageRepo = getConnectionManager().get('my-connection').getRepository(Message);
   const messageDeleted = await messageRepo
     .createQueryBuilder()
     .delete()
