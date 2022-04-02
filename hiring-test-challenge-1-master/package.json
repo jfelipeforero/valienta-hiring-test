@@ -1,72 +1,72 @@
 {
-    "name": "challenge-1",
-    "version": "1.0.0",
-    "description": "..",
-    "main": "dist/server.js",
-    "scripts": {
-        "watch-server": "npm run check-node && nodemon --watch src -e ts,tsx --exec ts-node src/server.ts",
-        "tsc": "tsc",
-        "clean:dist": "rm -rf dist",
-        "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet",
-        "copy-static-assets": "ts-node copyStaticAssets.ts",
-        "serve": "node dist/server.js",
-        "build": "npm run tsc && npm run copy-static-assets",
-        "start": "npm run serve",
-        "test": "npm run lint && npm run test:silent",
-        "test:silent": "jest --forceExit --coverage --verbose --detectOpenHandles",
-        "test:update": "jest --forceExit --coverage --verbose --detectOpenHandles --update-snapshot",
-        "watch-test": "jest --watch",
-        "check-node": "check-node-version --node 14.17.1",
-        "preinstall": "check-node-version --node 14.17.1 --npm 7.19.0",
-        "loadFixtures": "node ./fixtures/loadFixtures.js"
-    },
-    "jest": {
-        "testEnvironment": "node",
-        "preset": "ts-jest"
-    },
-    "husky": {
-        "hooks": {
-            "pre-push": "npm test"
-        }
-    },
-    "author": "Valienta",
-    "homepage": "",
-    "repository": "",
-    "devDependencies": {
-        "@types/jest": "^26.0.23",
-        "@types/koa__cors": "^3.0.2",
-        "@types/koa-router": "^7.4.2",
-        "@types/node": "^12.19.8",
-        "@types/shelljs": "^0.8.0",
-        "@typescript-eslint/eslint-plugin": "^2.20.0",
-        "@typescript-eslint/parser": "^2.20.0",
-        "eslint": "^6.8.0",
-        "eslint-config-airbnb-base": "^14.2.1",
-        "eslint-plugin-import": "^2.22.1",
-        "husky": "^4.3.5",
-        "jest": "^27.0.6",
-        "nodemon": "^2.0.12",
-        "shelljs": "^0.8.2",
-        "ts-jest": "^27.0.3",
-        "ts-node": "^8.3.0",
-        "typescript": "^3.7.5"
-    },
-    "dependencies": {
-        "@koa/cors": "^3.1.0",
-        "axios": "^0.21.1",
-        "dotenv": "^10.0.0",
-        "http-status-codes": "^2.1.4",
-        "koa": "^2.13.1",
-        "koa-bodyparser": "^4.3.0",
-        "koa-helmet": "^6.1.0",
-        "koa-router": "^10.0.0",
-        "newrelic": "^7.5.1",
-        "pg": "^8.6.0",
-        "swagger2": "^3.0.0",
-        "swagger2-koa": "^3.0.0",
-        "typeorm": "^0.2.34",
-        "typescript": "^3.7.5",
-        "uuid": "^8.3.2",
-        "winston": "^3.3.3"
+  "name": "challenge-1",
+  "version": "1.0.0",
+  "description": "..",
+  "main": "server.ts",
+  "scripts": {
+    "watch-server": "npm run check-node && nodemon --watch src -e ts,tsx --exec ts-node src/server.ts",
+    "tsc": "tsc",
+    "clean:dist": "rm -rf dist",
+    "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet",
+    "copy-static-assets": "ts-node copyStaticAssets.ts",
+    "serve": "node dist/server.js",
+    "build": "npm run tsc && npm run copy-static-assets",
+    "start": "npm run serve",
+    "test": "npm run lint && npm run test:silent",
+    "test:silent": "jest --forceExit --coverage --verbose --detectOpenHandles",
+    "test:update": "jest --forceExit --coverage --verbose --detectOpenHandles --update-snapshot",
+    "watch-test": "jest --watch",
+    "check-node": "check-node-version --node 14.17.1",
+    "preinstall": "check-node-version --node 14.17.1 --npm 7.19.0",
+    "loadFixtures": "node ./fixtures/loadFixtures.js"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "preset": "ts-jest"
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "npm test"
     }
+  },
+  "author": "Valienta",
+  "homepage": "",
+  "repository": "",
+  "devDependencies": {
+    "@types/jest": "^26.0.23",
+    "@types/koa__cors": "^3.0.2",
+    "@types/koa-router": "^7.4.2",
+    "@types/node": "^12.19.8",
+    "@types/shelljs": "^0.8.0",
+    "@typescript-eslint/eslint-plugin": "^2.20.0",
+    "@typescript-eslint/parser": "^2.20.0",
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "husky": "^4.3.5",
+    "jest": "^27.0.6",
+    "nodemon": "^2.0.12",
+    "shelljs": "^0.8.2",
+    "ts-jest": "^27.0.3",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "@koa/cors": "^3.1.0",
+    "axios": "^0.21.1",
+    "dotenv": "^10.0.0",
+    "http-status-codes": "^2.2.0",
+    "koa": "^2.13.1",
+    "koa-bodyparser": "^4.3.0",
+    "koa-helmet": "^6.1.0",
+    "koa-router": "^10.0.0",
+    "newrelic": "^7.5.1",
+    "pg": "^8.6.0",
+    "swagger2": "^3.0.0",
+    "swagger2-koa": "^3.0.0",
+    "typeorm": "^0.2.34",
+    "typescript": "^3.7.5",
+    "uuid": "^8.3.2",
+    "winston": "^3.3.3"
+  }
 }

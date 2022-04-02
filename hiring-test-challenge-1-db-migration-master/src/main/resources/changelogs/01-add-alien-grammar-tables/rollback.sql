@@ -1,2 +1,3 @@
-DROP TABLE message;
-DROP TABLE type;
+DROP TABLE Message
+DROP TABLE Type
+DROP TABLE Alien

@@ -8,10 +8,15 @@ const basePath = 'http://localhost:3001/api';
 async function callEndpoint(method, url, headers, data) {
   try {
     await axios({
-      method, url: `${basePath}${url}`, headers, data
+      method,
+      url: `${basePath}${url}`,
+      headers,
+      data,
     });
   } catch (e) {
-    console.log(`❌ Error calling ${url}:\n \x1b[31m${JSON.stringify(e.response.data.message)}\n\n \x1b[0m`);
+    console.log(
+      `❌ Error calling ${url}:\n \x1b[31m${JSON.stringify(e.response.data.message)}\n\n \x1b[0m`
+    );
   }
 }
 

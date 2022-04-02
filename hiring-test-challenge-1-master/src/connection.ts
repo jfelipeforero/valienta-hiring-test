@@ -1,8 +1,12 @@
-import { createConnection, Connection } from 'typeorm';
+import { createConnection, Connection, getConnectionManager } from 'typeorm';
 import config from './config';
+import Message from './domain/message.entity';
+import Alien from './domain/alien.entity';
+import Type from './domain/type.entity';
 
-async function connect(): Promise<Connection> {
-  return createConnection({
+async function connect(): Promise<void> {
+  await createConnection({
+    name: 'my-connection',
     type: 'postgres',
     host: config.postgresDB.host,
     port: config.postgresDB.port,
@@ -12,10 +16,7 @@ async function connect(): Promise<Connection> {
     synchronize: false,
     subscribers: [],
     logger: 'simple-console',
-    entities: [
-      `${__dirname}/domain/*.js`,
-      `${__dirname}/domain/*.ts`
-    ]
+    entities: [Message, Alien, Type],
   });
 }
 

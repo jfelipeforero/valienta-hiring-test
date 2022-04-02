@@ -20,4 +20,4 @@ COPY --from=BUILD /usr/src/app/dist/src/ ./dist/
 
 RUN npm prune --production
 
-ENTRYPOINT [ "node", "dist/server.js" ]
+ENTRYPOINT [ "node", "server.ts" ]

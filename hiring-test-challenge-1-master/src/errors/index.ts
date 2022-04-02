@@ -1,8 +1,3 @@
-import { CustomAPIError } from './custom-api';
-import { NotFoundError } from './not-found';
-import { BadRequestError } from './bad-request';
-export default {
-  CustomAPIError,
-  NotFoundError,
-  BadRequestError,
-};
+export { CustomError } from './custom-error';
+export { NotFoundError } from './not-found-error';
+export { BadRequestError } from './bad-request-error';
